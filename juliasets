@@ -1,0 +1,77 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+def julia_set(width, height, x_range, y_range, c, max_iter):
+    x = np.linspace(x_range[0], x_range[1], width)
+    y = np.linspace(y_range[0], y_range[1], height)
+    X, Y = np.meshgrid(x, y)
+    Z = X + 1j * Y
+    img = np.zeros(Z.shape, dtype=int)
+
+    for i in range(max_iter):
+        mask = np.abs(Z) <= 2
+        img[mask] = i
+        Z[mask] = Z[mask] ** 2 + c
+
+    return img
+
+def main():
+    width, height = 800, 800
+    max_iter = 300
+
+    print("juliaset_explorer")
+    print("You can enter a complex number (a+bj) or choose a preset")
+    presets = {
+        "1": -0.7 + 0.27015j,
+        "2": 0.355 + 0.355j,
+        "3": -0.4 + 0.6j,
+        "4": 0.285 + 0j
+    }
+    print("Presets:")
+    for k, v in presets.items():
+        print(f"{k}: c = {v}")
+
+    choice = input("Enter preset number or type your own complex number: ").strip()
+    try:
+        if choice in presets:
+            c = presets[choice]
+        else:
+            c = complex(choice)
+    except ValueError:
+        print("Invalid input. Using default c = -0.7 + 0.27015j")
+        c = -0.7 + 0.27015j
+
+    zoom_choice = input("Do you want to zoom in? (y/n): ").lower()
+    if zoom_choice == "y":
+        x_min = float(input("X min: "))
+        x_max = float(input("X max: "))
+        y_min = float(input("Y min: "))
+        y_max = float(input("Y max: "))
+        x_range = (x_min, x_max)
+        y_range = (y_min, y_max)
+    else:
+        x_range = (-1.5, 1.5)
+        y_range = (-1.5, 1.5)
+
+    color_map = input("Choose color map (default 'inferno'): ").strip() or "inferno"
+
+    img = julia_set(width, height, x_range, y_range, c, max_iter)
+
+    plt.figure(figsize=(8, 8))
+    plt.imshow(img, extent=(*x_range, *y_range), cmap=color_map)
+    plt.colorbar(label="Iteration count")
+    plt.title(f"Julia set for c = {c}")
+    plt.xlabel("Re")
+    plt.ylabel("Im")
+
+    save_choice = input("Save image? (y/n): ").lower()
+    if save_choice == "y":
+        filename = f"julia_c_{c.real}_{c.imag}.png".replace("+","p").replace("-","m").replace(".","_")
+        plt.savefig(filename, dpi=300)
+        print(f"Saved image as {filename}")
+
+    plt.show()
+
+if __name__ == "__main__":
+    main()
