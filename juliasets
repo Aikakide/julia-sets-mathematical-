@@ -21,7 +21,7 @@ def main():
     max_iter = 300
 
     print("juliaset_explorer")
-    print("You can enter a complex number (a+bj) or choose a preset")
+    print("You can enter a complex number (a+bj) or choose a preset directly")
     presets = {
         "1": -0.7 + 0.27015j,
         "2": 0.355 + 0.355j,
